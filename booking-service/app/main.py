@@ -1,9 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import requests
 import uuid
 import os
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="Booking Service")
 
 FLIGHT_SERVICE_URL = os.environ.get("FLIGHT_SERVICE_URL", "http://flight-service:8001")
@@ -56,3 +55,12 @@ def book(req: BookingRequest):
     #Se confirma
     bookings[booking_id]["status"] = "confirmed"
     return {"booking_id": booking_id, "status": "confirmed", "flight_id": req.flight_id}
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # frontend dev server Vite
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
